@@ -1,0 +1,17 @@
+--- RootMe ---
+
+1. Check nmap > Ports 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist to find the hidden directory.
+   We get the /panel and /uploads directory. Visiting /panel gives us the ability to upload a shell.
+4. But the server rejects uploading shell with .php extension.
+5. Let's bypass this with the tricks mentioned here > https://book.hacktricks.xyz/pentesting-web/file-upload.
+6. After using .phtml extension, the server accepts the file. The file is uploaded into the /uploads directory.
+7. Using nc (netcat) gives us a shell.
+8. But /home directory doesn't give us user.txt flag.
+9. So let's search the file in the system using this command > "find / -name user.ext 2> /dev/null" and we get the user flag.
+10. Now let's find SUID binary on the system using linpeas. We can see that python has the SUID bit set.
+11. GTFO has an entry for python. Using that gives us root shell.
+12. Now following the step 9 for the root.txt file gives us the root flag.
+
+--- Enjoy ---

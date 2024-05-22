@@ -1,0 +1,26 @@
+--- Anthem ---
+
+1. Check nmap > Ports 80, and 3389 (ms-wbt-server) are open.
+2. Seeing the port 80 open, we can say it must be a website. Visiting the website, we can see that it's a blog. Let's check the robots.txt
+   file. It gives us a text "UmbracoIsTheBest!" which seems like a password. Also the disallow section mentions an interesting entry
+   "umbraco" which is a CMS.
+3. The blog reveals the domain of the website which is "anthem.com".
+4. The post titled "A cheers to our IT department" says that there is a poem to appreciate the admin of the website who redesigned the
+   entire website. Searching for the poem on Google reveals the name of the admin which is "Solomon Grundy".
+5. The post titled "We are hiring" mentions an email address that is "jd@admin.com" and the author's name is "Jane Doe". As our admin's
+   name is "Solomon Grundy", we can guess his email address is "sg@anthem.com".
+6. Let's find the flags hidden on the website. The source page of any page gives us the 2nd flag inside the section for search that is
+   "THM{G!T_G00D}".
+7. The source page of the post titled "A cheers to our IT department" gives us the 1st flag
+   inside the meta that is "THM{L0L_WH0_US3S_M3T4}".
+8. The source page of the post titled "A cheers to our IT department" gives us the 4th flag inside the meta that is "THM{AN0TH3R_M3TA}".
+9. The author's page of Jane Doe gives us the 3rd flag that is "THM{L0L_WH0_D15}".
+10. As port 3389 is open, let's try to login using RDP using the "rdesktop $IP" command with username "sg" and the password
+    "UmbracoIsTheBest!" we got before and we're in. The Desktop folder gives us the user.txt flag.
+11. Let's escalate our privilege as root. There's a hidden directory named "backup" inside the C: directory. And there's a txt file
+    "restore.txt" inside the backup folder. But we don't have the permission to view it. Let's give our current user "SG "the permission
+    to view the file and it reveals a password "ChangeMeBaby1MoreTime" which might be our admin's password.
+12. If we visit the C:\Users directory, we can find another user named "Administrator". Let's view the folder using the password we got
+    from the previous step. Therefore, we get the root.txt flag inside the Desktop folder.
+
+--- Enjoy ---

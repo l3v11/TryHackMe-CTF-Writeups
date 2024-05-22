@@ -1,0 +1,16 @@
+--- Pickle Rick ---
+
+1. Check nmap > Port 80 is open, so it could be a website. Open in browser.
+2. Check robots.txt > Looks like a password or something, note it.
+3. Check the source code of index page. We get username from here.
+4. Use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist.
+   We get login.php page.
+5. Visit the login page and login with the credential we found earlier.
+6. We get Command Injection vulnerability here.
+7. Do ls, we get the first flag file. But we can't cat it. So use less command.
+8. Do ls into /home/rick. There we get the 2nd flag.
+9. Let's do ls into /root. Nothing shows. Let's check our permission with sudo -l.
+   From here we can see that we can run any command as root.
+10. So, use sudo ls /root and we can see there's the third flag.
+
+--- Enjoy ---

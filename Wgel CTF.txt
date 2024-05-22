@@ -1,0 +1,16 @@
+--- Wgel CTF ---
+
+1. Check nmap > Ports 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing. But the source code of the website
+   gives us a name "Jessie" which might be an username.
+3. Use gobuster with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the /sitemap directory.
+   The /sitemap directory gives us a decent website.
+4. Again let's use gobuster with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory in the /sitemap directory.
+   We get the /.ssh directory which is really interesting. Visiting the ./ssh directory, we get the id_rsa file which is a SSH private key.
+5. Let's download the id_rsa file into our local machine. Now, change the permission of the file by "chmod 400 id_rsa". Next login to ssh
+   using the id_rsa file and the username "jessie" we got before and we're in. This gives us the user_flag.txt flag.
+6. Using "sudo -l" command says that we can run "/usr/bin/wget" command as sudo without password. GTFO has an entry for wget. Using that
+   we can read the root_flag.txt file using "sudo wget -i /root/root_flag.txt" command. We tried reading /root/root.txt file but there's
+   no file exists with this name. As our user flag file was user_flag.txt, so we assumed root flag file might be root_flag.txt and bingo!
+
+--- Enjoy ---

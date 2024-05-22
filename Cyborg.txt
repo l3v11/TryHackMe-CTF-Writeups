@@ -1,0 +1,22 @@
+--- Cyborg ---
+
+1. Check nmap > Ports 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist to find any hidden directory.
+   We get the /admin and /etc directory. The /admin directory gives us a music related website.
+   The /etc directory gives us a passwd file which contains a password hash. Cracking it using john gives us the password "squidward". 
+4. There is a "Admins" category, which reveals an "Admin Shoutbox", where we can learn about a music archive file. If we roam around, we
+   can get an "archive.tar" file from "Archive" category.
+5. Let's extract the "archive.tar" file. There's a folder named "final_archive" inside the extracted directory. The "README" file says
+   this is a Borg Backup repository.
+6. Change directory into previous directory. Then list the files using "borg list final_archive" command. It asks for a passphrase. Let's
+   use the password we got earlier. We can see that there's another directory named "music_archive". Using the command
+   "borg list final_archive::music_archive" lists all the files.
+7. Let's extract all the files using "borg extract final_archive::music_archive" command.
+8. We got an interesting file "note.txt" inside home/field/dev/home/alex/Documents/ directory. It reveals a user:pass credential.
+9. As port 22 is open this credential might be for SSH. Let's SSH into the server using the credential and we got the user.txt flag.
+10. Using "sudo -l" command says that we can run "/etc/mp3backups/backup.sh" as sudo. Let's attempt to add write permission to the file
+    using "chmod +w /etc/mp3backups/backup.sh" and we got success.
+11. Let's use this command "echo '/bin/bash' > /etc/mp3backups/backup.sh" and run the script as sudo and this gives us root.txt flag.
+
+--- Enjoy ---

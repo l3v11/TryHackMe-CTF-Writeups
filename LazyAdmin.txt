@@ -1,0 +1,22 @@
+--- LazyAdmin ---
+
+1. Check nmap > Ports 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist to find any hidden directory.
+   We get the /content directory. Visiting /content gives us SweetRice CMS. Finding for SweetRice CMS on GTFO, we can
+   see an interesting entry "SweetRice 1.5.1 - Backup Disclosure". It says that we can access to all mysql backup and
+   download them from this directory > http://localhost/inc/mysql_backup.
+4. Again use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist in the /content directory
+   to find any hidden directory. We get the /as directory. Visiting /as gives us a login page.
+5. Now, editing the "mysql_bakup_20191129023059-1.5.1.sql" file, we get these info
+	admin: manager
+	passwd: 42f749ade7f9e195bf475f37a44cafcb (MD5) - Password123
+6. Let's login to the admin panel with this credentials.
+7. We can upload files in the Media Center. Let's upload our reverse shell here. But it doesn't accept .php files. Let's bypass
+   this with .php5 extension and we got a shell. The home directory gives us user.txt flag. We can also find an interesting file
+   which is backup.pl, but only root can edit it but we can read it. This file says that it executes /etc/copy.sh file.
+8. The /etc/copy.sh file says that it executes a reverse shell and has read-write permission for guest user which is us. Let's
+   add our reverse shell in this file and execute backup.pl file with "sudo /usr/bin/perl /home/itguy/backup.pl" command and we
+   got a root shell along with our root.txt flag.
+
+--- Enjoy ---

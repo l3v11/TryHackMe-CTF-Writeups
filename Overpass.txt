@@ -1,0 +1,22 @@
+--- Overpass ---
+
+1. Check nmap > Ports 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist to find any hidden directory.
+   We get the /admin directory. Visiting /admin gives us a login page.
+4. After checking the source code of the page, we can see that there is a "login.js" file. And the script is 
+   checking cookie tokens and granting access, as no cookies are generated. So, we can give our cookie matching
+   the conditions. Let's set our cookie to "SessionToken=any_value". After refreshing the page we are in the admin panel.
+5. We get a username "james" and a ssh private key and also a hint which says about cracking it.
+6. Using ssh2john and john gives us the passphrase for the private key. Logging into the ssh with these credentials
+   gives us the user.txt flag and todo.txt file which says about an automated build script.
+7. Let's check the /etc/crontab file which says that a buildscript.sh file is being downloaded from 
+   overpass.thm/downloads/src/buildscript.sh.
+8. Check the /etc/hosts file. There's an entry for overpass.thm. Also the user james can edit the /etc/hosts file
+   in this machine. So, create an entry for overpass.thm with our local machine's IP in the /etc/hosts file of both
+   the targeted machine and our local machine .
+9. Now create a buildscript.sh file with a reverse shell in our local machine in the same location addressed in the crontab.
+10. Let's start a python http server at port 80 and listen the port mentioned in the shell with nc (netcat).
+11. After a while we get the root shell and the root.txt flag.
+
+--- Enjoy ---

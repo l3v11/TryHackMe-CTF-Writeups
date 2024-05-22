@@ -1,0 +1,27 @@
+--- h4cked ---
+
+1. Check nmap > Ports 21, 22, 80, and 111 (rpcbind) are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist to find any hidden directory. We get the
+   /island directory. The source code of the /island directory gives us a code word which is "vigilante". Let's use gobuster with
+   /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist in the /island directory to find any hidden directory. We get
+   the /2100 directory. The source code of the /2100 directory says that we can avail our .ticket here. Seems like .ticket is a file
+   extension. Let's use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt wordlist and .ticket extension to
+   find any hidden file. We get the /green_arrow.ticket file. Visiting the /green_arrow.ticket file gives us the password "RTy8yhBQdscX"
+   which seems ciphered. Analyzing it with dCode.fr Cipher Identifier we see that it is encoded using Base58 algorithm. Decrypting it
+   we get the original password "!#th3h00d".
+4. As port 21 (ftp) is open, let's try to login to ftp using the credential vigilante:!#th3h00d which we got earlier and we're in.
+   We get three files "Leave_me_alone.png", "Queen's_Gambit.png", and "aa.jpg". Let's get these files on our local machine. Using "cd .."
+   command we can see that there is another user "slade" but we can't cd into it.
+5. Let's proceed with steganography as we got images only. The file "Leave_me_alone.png" is corrupted. The file command also says that it's
+   a data file which is suspicious as it is a PNG file. Let's edit the file using hexeditor and we can see that the file signature doesn't
+   match with PNG. Fixing this issue we can open the file and this gives us the text "password".
+6. Another file "Queen's_Gambit.png" is PNG iamge but analyzing it we got nothing.
+7. The file "aa.jpg" is a JPEG image. Using steghide with the passphrase "password" we got from step 5 extracts two files > "passwd.txt"
+   and "shado". The file "passwd.txt" doesn't give us anything but the file "shado" gives us a text "M3tahuman" which seems like a password.
+8. Let's try to login to ssh using the name "slade" we got from step 4 and the password "M3tahuman" we got from step 7 and we're in. This
+   gives us the user.txt flag.
+9. Now, let's escalate our shell as root. Using "sudo -l" command says that we can run "/usr/bin/pkexec" command as sudo without password.
+   GTFO has an entry for pkexec. Using that we got a root shell and got the root.txt flag.
+
+--- Enjoy ---

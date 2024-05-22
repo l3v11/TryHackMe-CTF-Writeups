@@ -1,0 +1,23 @@
+--- Agent Sudo ---
+
+1. Check nmap > Ports 21, 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. The website says to use the dev's codename
+   as user-agent to access the site.
+3. The hint tells us to use user-agent as "C". Doing so gives us the agent name "chris". And also tells us that agent J's password is weak.
+4. We can assume that our ftp password is "chris". Now let's use hydra to crack our ftp password. This gives us the ftp password "crystal".
+5. Logging into the ftp gives us three files - one txt file and two images.
+6. The file "To_agentJ.txt" says that the images are fake. So this gives us hint that it might be steganography related.
+7. Using binwalk tool on cutie.png gives us a zip file "8702.zip" which is password protected.
+8. Now john comes into play. zip2john and john crack the password which is "alien". Though we can't extract data from the zip file.
+9. Let's use stegseek on the "cute-alien.jpg" file. This gives us the password "Area51". Also we get the "cute-alien.jpg.out" file
+   from this process which gives us the other agent's name which is "james" and the ssh password "hackerrules!".
+10. Logging into the ssh gives us the user_flag.txt flag and an image.
+11. Let's transfer the image into our local machine using scp.
+12. The hint says us to use the reverse image search. Doing so tells that the incident of the photo is called "Roswell Alien Autopsy".
+13. Now let's escalate our shell as root. Command "sudo -l" gives us "(ALL, !root) /bin/bash" that means we may manipulate sudo.
+14. Searching for "sudo" on ExploitDB we can see that there is an interesting entry which is "sudo 1.8.27 - Security Bypass" and
+    it's CVE is 2019-14287. From here we get our command which is "sudo -u#-1 /bin/bash". This gives us a root shell and the root flag.
+    Also we get the real name of Agent R which is "DesKel".
+
+--- Enjoy ---
+

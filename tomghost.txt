@@ -1,0 +1,25 @@
+--- tomghost ---
+
+1. Check nmap > Ports 22, 53, 8009 (ajp13), and 8080 (Tomcat) are open.
+2. Seeing the port 8080 open, we can say it must be a website. Visiting the website gives us the Apache Tomcat default page which shows
+   the Tomcat version. Let's search for "Tomcat" on ExploitDB and we get an interesting entry "Apache Tomcat - AJP 'Ghostcat' File
+   Read/Inclusion (Metasploit)".
+3. Let's open Metasploit using the msfconsole command. Searching for "ghostcat" we get our desired entry. Using this exploit, we get
+   a user:pass credential.
+4. As port 22 is open this credential might be for SSH. Let's SSH into the server using the credential. We get two files > "credential.pgp"
+   and "tryhackme.asc". 
+   > .pgp and .asc are file extensions used for encrypted files. 
+   > .pgp files are encrypted files created with PGP, a popular encryption tool used for secure email communication and file encryption,
+     which uses a combination of symmetric-key and public-key encryption. 
+   > .asc files are encrypted files created using GnuPG, an open-source alternative to PGP, that converts binary data into ASCII characters
+     using ASCII armor, allowing data transmission without any loss of information.
+5. The user.txt flag is in the /home/merlin directory and only the user merlin can read it. So, let's try to use those keys. First, import
+   the tryhackme.asc file using "gpg --import tryhackme.asc" command. Now if we try to decrypt credential.pgp using the command
+   "gpg --decrypt credential.pgp", we see that a passphrase is needed which we don't have. We must crack it. Let's transfer the file
+   "tryhackme.asc" using scp to our local machine.
+6. Using gpg2john and john gives us the passphrase. Now, step 5 using the passphrase gives us the credential for the user merlin which
+   gives us the user.txt flag.
+7. Now let's escalate our shell as root. Doing "sudo -l" says that the current user may run "zip" command as sudo. GTFO has an entry for
+   zip. Using that gives us root shell and root.txt flag.
+
+--- Enjoy ---

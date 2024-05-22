@@ -1,0 +1,13 @@
+--- Bounty Hacker ---
+
+1. Check nmap > Ports 21, 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Visiting the website gives some chat history.
+3. Port 21 is open, which is ftp and we can see that Anonymous login is allowed. Let's login into the ftp with
+   user anonymous. We get two files - locks.txt and task.txt.
+4. The file task.txt gives us the username "lin" and the file locks.txt seems like a wordlist.
+5. Let's use hydra to brute-force the SSH using the locks.txt wordlist and we get our SSH creds.
+6. Logging into SSH gives us user.txt flag.
+7. Doing "sudo -l" says that the current user may run "tar" command as root. GTFO has an entry for tar.
+   Using that gives us root shell and root.txt flag.
+
+--- Enjoy ---

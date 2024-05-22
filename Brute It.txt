@@ -1,0 +1,20 @@
+--- Brute It ---
+
+1. Check nmap > Ports 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the /admin directory.
+   The /admin directory gives us a login portal and asks for username and password. The source code of the login panel says the username
+   is "admin".
+4. Let's crack the password using the command
+   > hydra -l admin -P /usr/share/wordlists/rockyou.txt $IP http-post-form "/admin/:user=^USER^&pass=^PASS^:invalid"
+   The password is "xavier". Logging into the Admin Panel with the credential, we got the web flag and a SSH private key and a name
+   "john" which might be an username.
+5. Let's download the id_rsa file into our local machine. Now, change the permission of the file by "chmod 400 id_rsa". Next login to ssh
+   using the id_rsa file and the username "john" we got before but asks for passphrase. Cracking it using ssh2john and john gives us the
+   passphrase which is "rockinroll". Next login into ssh using the passphrase and we're in. This gives us the user.txt flag.
+6. Using "sudo -l" command says that we can run "/bin/cat" command as sudo without password. GTFO has an entry for cat. Using that
+   we can read the "/etc/passwd" and "/etc/shadow" files. Let's save the entry for root from both files into our local machine. Next
+   unshadow these files using "unshadow passwd shadow > hash" command. Cracking the "hash" file gives us the root's password.
+7. Logging in as root using the password gives root.txt flag.
+
+--- Enjoy ---

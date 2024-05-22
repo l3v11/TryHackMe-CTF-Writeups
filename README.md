@@ -1,1 +1,1 @@
-# TryHackMe-CTF-Writeups
+# TryHackMe CTF Writeups

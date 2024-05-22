@@ -1,0 +1,15 @@
+--- Simple CTF ---
+
+1. Check nmap > Ports 21 (ftp), 80, and 2222 (ssh) are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. The third question says about an application. Well let's use gobuster with /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt
+   wordlist to find any hidden directory. We get the /simple directory. Visiting /simple we get a CMS named CMS Made Simple along with it's
+   version which is 2.2.8. We can also find a username which is "mitch".
+4. Time to check on Exploit DB to search for CVE. "CMS Made Simple < 2.2.10 - SQL Injection" seems promising and matches
+   with our CMS version.
+5. Let's try hydra to brute-force ssh password on port 2222. We get the password "secret".
+6. Now let's login into ssh and we get user.txt flag.
+7. Doing "sudo -l" shows that we have root access to vim.
+8. Let's use GTFO to elevate our access to root. We get root.txt flag.
+
+--- Enjoy ---

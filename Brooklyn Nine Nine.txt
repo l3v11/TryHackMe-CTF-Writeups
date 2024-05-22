@@ -1,0 +1,12 @@
+--- Brooklyn Nine Nine ---
+
+1. Check nmap > Ports 21, 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives us an image. Viewing the source of this page
+   we can find a hint which states that the image might be related to steganography. Let's download the image.
+3. Steghide couldn't extract any data and says compressed data is corrupted. But stegseek works fine and we got a txt file extracted.
+   It gives us Holt's password.
+4. As port 22 is open this credential might be for SSH. Let's SSH into the server using the credential and we got the user.txt flag.
+5. Now let's escalate our shell as root. Doing "sudo -l" says that the current user may run "nano" command as root. GTFO has an entry for
+   nano. Using that gives us root shell and root.txt flag.
+
+--- Enjoy ---

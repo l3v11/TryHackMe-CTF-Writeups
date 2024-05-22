@@ -1,0 +1,31 @@
+--- Year of the Rabbit ---
+
+1. Check nmap > Ports 21, 22, and 80 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the /assets directory.
+   The /assets directory gives us two files > RickRolled.mp4 and style.css. Opening style.css file, it says to take a look at the 
+   /sup3r_s3cr3t_fl4g.php page. But it redirects us to the RickRoll video.
+4. Let's open burpsuite and intercept the request. Forwarding it once gives us a hidden directory which is "/WExYY2Cv-qU". Visiting this
+   directory we get the "Hot_Babe.png" file. Download this file into our local machine.
+5. The strings command reveals the username for FTP which is "ftpuser" and a password list. Save the passwords in a file.
+   Let's crack the FTP password using the command
+   > hydra -l ftpuser -P pass $IP ftp
+   The password is "5iez1wGXKfPKQ". Logging into the FTP with the credential, we got the "Eli's_Creds.txt" file. The texts inside the file
+   is encrypted using BrainFuck Cipher. Converting it to plaintext using dCode.fr website gives the credential
+   	User: eli
+	Password: DSpDiM1wAEwid
+6. As port 22 is open this credential might be for SSH. Let's SSH into the server using the credential and we're in. Upon login we are
+   presented with this message
+   > Message from Root to Gwendoline:
+   > "Gwendoline, I am not happy with you. Check our leet s3cr3t hiding place. I've left you a hidden message there"
+7. The message tells us about a hiding place called "s3cr3t". Let's search using this text if it exists or not using the command
+   > find / -name s3cr3t 2>/dev/null
+   We get /usr/games/s3cr3t which is a directory. Inside it a file ".th1s_m3ss4ag3_15_f0r_gw3nd0l1n3_0nly!" exists. This file gives us
+   ssh credential for the user gwendoline which is "gwendoline:MniVCQVhQHUNI".
+8. Logging as user Gwendoline with the above credential, we get the user.txt flag.
+9. Now, let's escalate our shell as root. Doing "sudo -l" gives "(ALL, !root) NOPASSWD: /usr/bin/vi /home/gwendoline/user.txt".
+   ExploitDB has an interesting entry for sudo which is "sudo 1.8.27 - Security Bypass" and GTFO has an entry for vi. Using these let's
+   run this command > "sudo -u#-1 /usr/bin/vi /home/gwendoline/user.txt". Then press ":" and spawn a shell by typing "!/bin/bash". And we
+   we got the root shell and this gives us root.txt flag.
+
+--- Enjoy ---
