@@ -1,0 +1,35 @@
+--- Fowsniff CTF ---
+
+1. Check nmap with "-p- -T4" flags > Ports 22, 80, 110 (pop3), and 143 (imap) are open.
+2. Seeing the port 80 open, we can say it must be a website. Visiting the website, we can see that it is the official website of
+   Fowsniff Corp. But the website says that it is temporarily out of service as their internal system suffered a data breach that
+   resulted in the exposure of employee usernames and passwords. The attackers also hacked their official @fowsniffcorp Twitter (Now X)
+   account. Well time to visit Fnowsniff's Twitter account to see if we can get any sensitive info. And surprisingly, we got the
+   password dump. The password dump contains some user:pass credentials and mentions that these are email passwords. It also mentions
+   that their pop3 server is wide open and the passwords are hashed using MD5 algorithm. Well enough info for us. Let's get to work.
+3. Extract the password hashes from the password dump file using this sed command
+   > sed -n 's/.*://p' fowsniff.txt > hashes.txt
+   Let's crack these MD5 hashes but 1 hash is left uncracked which is the password hash for the user "stone". Now save these cracked
+   passwords in a text file.
+4. Now extract the usernames from the password dump file using this awk command
+   > awk -F'@' '{print $1}' fowsniff.txt > users.txt
+   Clear all the unnecessary clutters from this user.txt file.
+5. Let's use Metasploit to search for any exploit related to pop3 as we saw from step 2 that the company's pop3 server is wide open. We
+   get an interesting exploit titled "pop3_login". As we have a user:pass list, this exploit might be useful. Running the exploit we get
+   a valid credential which is "seina:scoobydoo2".
+6. Now connect to pop3 using the command "nc $IP 110". To login, let's use the following command
+   > user seina
+   > pass scoobydoo2
+   To view the mails list, we will use the command "list", and to view any email we will use the command "retr 1", "retr 2", ... The
+   1st email gives us the SSH password which is "S1ck3nBluff+secureshell" and the sender of the 2nd email is the SSH username which is
+   "baksteen". Now login to the server using SSH and we're in.
+7. The next question gives us a hint to check what group does the user "baksteen" belong to and if there is any interesting file that
+   can be run by that group. Let's use the find command to do so
+   > find / -group users 2>/dev/null
+   We got an interesting file "/opt/cube/cube.sh". This file has read, write and executable permission for the usergroup "users", our
+   current user also belongs to this group. This file is run as root when a user connects to the machine using SSH. We know this as we
+   are presented with the same Fowsniff Corp. banner when we login to SSH. Let's look in /etc/update-motd.d/00-header file and we see
+   that there is an entry for "/opt/cube/cube.sh" at the end.
+8. Let's add a reverse shell into this bash script and start our listener. When we re-login we get the root shell.
+
+--- Enjoy ---

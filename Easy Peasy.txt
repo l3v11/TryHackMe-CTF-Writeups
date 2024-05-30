@@ -1,0 +1,28 @@
+--- Easy Peasy ---
+
+1. Check nmap with "-p- -T4" flags > Ports 80 (nginx 1.16.1), 6498 (ssh), and 65524 (Apache) are open.
+2. Use gobuster with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the /hidden directory. Visiting
+   the /hidden directory, we get an image which we thought that it might be related to steganography but it is not. Let's use gobuster
+   again with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the /whatever directory. Visiting the
+   /whatever directory, we get an image which we thought again that it might be related to steganography and got a big disappointment.
+   But checking the source code of the page we get an encrypted text inside a <p> tag. Using CyberChef, we can decrypt the text using
+   base64 and this gives us the flag.
+3. We saw from nmap that port 65524 is open, which is running the Apache service. Let's use gobuster on $IP:65524 with
+   /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the robots.txt file. Visiting the robots.txt file
+   we get a hash. Haiti says it might be hashed using MD5 algorithm. The website md5hashing.net gives us the next flag.
+4. We get another flag inside the task file easypeasy....txt using grep command.
+5. Now if we see the source page of the $IP:65524 website, we get a hash inside a <p> tag and says that it is encoded with ba.... Let's
+   apply different base decoding options and base62 gives us /n0th1ng3ls3m4tt3r directory. Visiting the /n0th1ng3ls3m4tt3r directory,
+   we see that something is hiding on page load. If we see the source page of the /n0th1ng3ls3m4tt3r directory, we get an image
+   "binarycodepixabay.jpg". We also got another hash inside the <p> tag. Haiti says that it might be hashed using SHA-256 or GOST R
+   34.11-94 algorithm. Using john with easypeasy....txt wordlist and "gost" format gives us the password.
+6. Now the image we got from step 5, let's try to apply steganography to it. StegHide asks for a passphrase. Applying the password we
+   obtained from step 5, we got the "secrettext.txt" file. It gives us a user:pass combo but the password seems to be some binary digits.
+   Following binary > hex > text procedure gives the original password.
+7. Logging into SSH on port 6498 using the above credential gives us the user.txt flag but not actually as the message says the flag is
+   rotated or something. Now we can think of only ROT13 or ROT47 algorithm. The ROT13 algorithm gives us the valid flag.
+8. Let’s look at the crontabs using the command "cat /etc/crontab". Looking at the crontabs we see that the user root is running a bash
+   script called .mysecretcronjob.sh in the /var/www directory. This script is writable. Let's append our reverse shell inside the
+   script. Listening on our desired port, we got the root shell and this gives us the .root.txt flag.
+
+--- Enjoy ---

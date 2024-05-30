@@ -1,9 +1,9 @@
 --- Anthem ---
 
 1. Check nmap > Ports 80, and 3389 (ms-wbt-server) are open.
-2. Seeing the port 80 open, we can say it must be a website. Visiting the website, we can see that it's a blog. Let's check the robots.txt
-   file. It gives us a text "UmbracoIsTheBest!" which seems like a password. Also the disallow section mentions an interesting entry
-   "umbraco" which is a CMS.
+2. Seeing the port 80 open, we can say it must be a website. Visiting the website, we can see that it's a blog. Let's check the
+   robots.txt file. It gives us a text "UmbracoIsTheBest!" which seems like a password. Also the disallow section mentions an
+   interesting entry "umbraco" which is a CMS.
 3. The blog reveals the domain of the website which is "anthem.com".
 4. The post titled "A cheers to our IT department" says that there is a poem to appreciate the admin of the website who redesigned the
    entire website. Searching for the poem on Google reveals the name of the admin which is "Solomon Grundy".

@@ -1,0 +1,24 @@
+--- ToolsRus ---
+
+1. Check nmap > Ports 22, 80, 1234 (Apache Tomcat), and 8009 are open.
+2. Seeing the port 80 open, we can say it must be a website. Though visiting the website gives nothing.
+3. Use gobuster with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the /guidelines and /protected
+   directories. Visiting the /guidelines directory we get a username "bob" and it mentions about a TomCat server. We know from nmap
+   scan that a Tomcat server is running on port 1234. The /protected directory has a basic authentication system and requires a username
+   and a password.
+4. Let's use hydra to crack the password of the /protected directory using the username "bob" and the following command
+   > hydra -l bob -P /usr/share/wordlists/rockyou.txt $IP http-get "/protected"
+   The password is "bubbles". Logging into the /protected directory with the credential, we learn that the directory has been moved to
+   a new port. As we got a mention about TomCat server before let's visit port 1234 and we get the version details of the Tomcat server
+   which is "Apache Tomcat/7.0.88".
+5. The next question tells us to use Nikto with the credentials we have found and scan the /manager/html directory on the port 1234.
+   Let's use the following command
+   > nikto -h http://$IP:1234/manager/html -id bob:bubbles
+   This scan took way long time. But Nikto identified 5 documentation files. We can also find that the version 1.1 of Apache-Coyote
+   server is running. From previous nmap scan we got the server version which is "Apache/2.4.18".
+6. Now, we need to run metasploit. Let's use the command msfconsole to run it. Next run the command "search tomcat" to find any good
+   exploit. We'll look for excellent rank and only for manager exploits. The exploit "tomcat_mgr_upload" seems like the one we're looking
+   for. Let's use it but for some reason it's not working on our VMware Kali. So, let's switch to the THM AttackBox and we got a
+   meterpreter shell. Switching to shell we got the username "root" and the root.txt flag.
+
+--- Enjoy ---

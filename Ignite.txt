@@ -1,6 +1,6 @@
 --- Ignite ---
 
-1. Check nmap > Port 80 is open and says the website is run by FUEL CMS. Visiting the website we can see that we can login to the admin
+1. Check nmap > Port 80 is open and says that the website is run by FUEL CMS. Visiting the website we see that we can login to the admin
    panel by visiting the /fuel directory and the user:pass credential is admin:admin and it works. But we can't get anything from here.
 2. Let's search for "fuel cms" using searchsploit command and "Fuel CMS 1.4.1 - Remote Code Execution (3)" entry seems interesting.
    Running this script with the website url gives us a RCE shell.
