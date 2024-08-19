@@ -1,0 +1,24 @@
+--- Vulnversity ---
+
+1. Check nmap > Ports 21, 22, 139, 445, 3128 (Squid http proxy 3.5.12), and 3333 (Apache) are open.
+2. Use gobuster with /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the /internal directory. Visiting
+   the /hidden directory, we get an upload form. Let's try to upload our PHP reverse shell, but says that extension not allowed. But
+   after trying with several php extensions, we found that .phtml extension is accepted. Now, let's use gobuster again with
+   /usr/share/dirb/wordlists/common.txt wordlist to find any hidden directory. We get the /uploads directory. Visiting the
+   /uploads directory, we get our reverse shell listed there. Netcat gives us a shell.
+3. We can see that there is a user named "bill" from /etc/passwd. We get user.txt flag from the /home/bill directory.
+4. Linpeas gives us an interesting SUID file - /bin/systemctl. Let's use GTFO to exploit this binary. But we need to use this modified
+   payload instead of the GTFO one.
+
+   TF=$(mktemp).service
+   echo '[Service]
+   Type=oneshot
+   ExecStart=/bin/sh -c "cat /root/root.txt > /tmp/out"
+   [Install]
+   WantedBy=multi-user.target' > $TF
+   systemctl link $TF
+   systemctl enable --now $TF
+
+   We get root.txt flag from /tmp/out file.
+
+--- Enjoy ---

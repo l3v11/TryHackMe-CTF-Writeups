@@ -1,0 +1,29 @@
+--- Kenobi ---
+
+1. Check nmap > Ports 21 (ProFtpd), 22, 80, 111 (rpc), 139, 445, and 2049 (nfs) are open.
+2. Let's enumerate the SMB using nmap. We get the share /anonymous and we can see that anonymous login is enabled. After login, we get
+   the log.txt file. From that file, we get a ftp username "kenobi" and anonymous login is enabled. Also ssh key is generated for that
+   user "kenobi".
+3. Now, enumerate the nfs on port 111 using nmap. We get the mount directory /var.
+4. As our ProFtpd is version 1.3.5, we have found an exploit from ProFtpd's mod_copy module from searchsploit. The mod_copy module
+   implements SITE CPFR and SITE CPTO commands, which can be used to copy files/directories from one place to another on the server.
+   Any unauthenticated client can leverage these commands to copy files from any part of the filesystem to a chosen destination. Let's
+   copy Kenobi's private key using SITE CPFR and SITE CPTO commands. But, first we need to login to the ftp using "nc IP 21" command.
+   We know that the /var directory is a mount from step 3. So, let's move Kenobi's private key to the /var/tmp directory using the
+   following commands.
+   > SITE CPFR /home/kenobi/.ssh/id_rsa
+   > SITE CPTO /var/tmp/id_rsa
+5. Let's mount the /var directory to our machine using the following command.
+   > sudo mkdir /mnt/kenobi
+   > sudo mount -t nfs $IP:/var /mnt/kenobi -o nolock
+6. After successful mounting, let's copy the id_rsa file to our machine. Logging into the ssh gives us the user.txt flag.
+7. Time to escalate our privilege as root. We can see there is an interesting SUID binary "/usr/bin/menu" running as root. The strings
+   command shows that the binary runs "curl, uname and ifconfig" commands upon execution. Let's manipulate our path gain a root shell
+   using the following commands.
+   > echo "/bin/bash" > /tmp/ifconfig
+   > chmod 777 /tmp/ifconfig
+   > export PATH=/tmp:$PATH
+   > /usr/bin/menu (Choose option 3)
+8. After successful exploitation, we're root and got the root.txt flag.
+
+--- Enjoy ---

